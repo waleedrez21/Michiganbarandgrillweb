@@ -203,7 +203,7 @@
 <script>
   (function () {
     const BACKEND_URL = "https://michigan-bar-grill-backend-production.up.railway.app";
-    const API_KEY = "biz_1b57ac318b3102c96539e82c9d1f7ffb5814703cbad3b67d"; // Michigan Bar & Grill's business API key
+    const BUSINESS_ID = "michigan-bar-grill";
 
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
@@ -248,7 +248,7 @@
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/orders/by-session/${encodeURIComponent(sessionId)}`, {
-          headers: { "X-API-Key": API_KEY },
+          headers: { "X-WorkBay-Business": BUSINESS_ID },
         });
         if (!res.ok) throw new Error("Order not found");
         const order = await res.json();
