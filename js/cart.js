@@ -11,7 +11,7 @@
 (function () {
   // ---- Configuration ----------------------------------------------------
   const BACKEND_URL = "https://michigan-bar-grill-backend-production.up.railway.app";
-  const API_KEY = "biz_1b57ac318b3102c96539e82c9d1f7ffb5814703cbad3b67d"; // Michigan Bar & Grill's business API key
+  const BUSINESS_ID = "michigan-bar-grill";
   // -------------------------------------------------------------------------
 
   const STORAGE_KEY = "mbg_cart";
@@ -474,7 +474,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-Key": API_KEY,
+          "X-WorkBay-Business": BUSINESS_ID,
         },
         body: JSON.stringify({
           items: cart.map((i) => ({ id: i.id, quantity: i.quantity })),

@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Contact form — front-end only.
      Hook this up to your backend endpoint once it's deployed. The backend
-     is multi-tenant, so every request needs an X-API-Key header identifying
+     is multi-tenant, so every request needs an X-WorkBay-Business header identifying
      this business (generated when the business was onboarded — see the
      backend's scripts/createBusiness.js). Example:
 
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json',
-         'X-API-Key': 'biz_...'   // this business's key
+         'X-WorkBay-Business': 'michigan-bar-grill'
        },
        body: JSON.stringify(data),
      });

@@ -8,10 +8,11 @@
    (function () {
     // ---- Configuration ----------------------------------------------------
     const BACKEND_URL = "https://michigan-bar-grill-backend-production.up.railway.app";
-    const API_KEY = "biz_1b57ac318b3102c96539e82c9d1f7ffb5814703cbad3b67d"; // Michigan Bar & Grill's business API key
+    const BUSINESS_ID = "michigan-bar-grill";
     // -------------------------------------------------------------------------
   
     const STORAGE_KEY = "mbg_chat_session_id";
+    const AI_CONSENT_VERSION = "2026-11-02";
   
     function getSessionId() {
       try {
@@ -34,9 +35,9 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-Key": API_KEY,
+          "X-WorkBay-Business": BUSINESS_ID,
         },
-        body: JSON.stringify({ sessionId: getSessionId(), message }),
+        body: JSON.stringify({ sessionId: getSessionId(), message, aiConsent: AI_CONSENT_VERSION }),
       });
   
       if (!res.ok) {
@@ -246,6 +247,10 @@
         </div>
       </div>
       <div id="mbg-chat-messages"></div>
+      <div style="padding: 8px 14px; font-size: 13px;">
+        <label><input id="mbg-chat-consent" type="checkbox"> I agree to share my messages with DeepSeek to answer questions and arrange bookings.</label>
+        <a href="${BACKEND_URL}/api/privacy" target="_blank" rel="noopener noreferrer">Privacy policy</a> · <a href="tel:+15192529357">Call us instead</a>
+      </div>
       <form id="mbg-chat-form">
         <textarea id="mbg-chat-input" rows="1" placeholder="Type a message..." required></textarea>
         <button type="submit" id="mbg-chat-send">Send</button>
@@ -261,6 +266,14 @@
     const sendBtn = chatWindow.querySelector("#mbg-chat-send");
     const closeBtn = chatWindow.querySelector("#mbg-chat-close");
   
+    const consentEl = chatWindow.querySelector("#mbg-chat-consent");
+    let sending = false;
+    function updateSendButton() {
+      sendBtn.disabled = sending || !consentEl.checked;
+    }
+    consentEl.addEventListener("change", updateSendButton);
+    updateSendButton();
+
     let greeted = false;
   
     // Safety net: even with prompt instructions telling the AI to avoid
@@ -315,11 +328,12 @@
     formEl.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = inputEl.value.trim();
-      if (!text) return;
+      if (!text || sending || !consentEl.checked) return;
   
       addMessage(text, "user");
       inputEl.value = "";
-      sendBtn.disabled = true;
+      sending = true;
+      updateSendButton();
   
       const typingEl = addMessage("Typing...", "typing");
   
@@ -335,7 +349,8 @@
         typingEl.remove();
         addMessage(err.message || "Something went wrong. Please call us instead.", "error");
       } finally {
-        sendBtn.disabled = false;
+        sending = false;
+        updateSendButton();
         inputEl.focus();
       }
     });
