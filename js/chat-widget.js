@@ -248,7 +248,6 @@
       </div>
       <div id="mbg-chat-messages"></div>
       <div style="padding: 8px 14px; font-size: 13px;">
-        <label><input id="mbg-chat-consent" type="checkbox"> I agree to share my messages with DeepSeek to answer questions and arrange bookings.</label>
         <a href="${BACKEND_URL}/api/privacy" target="_blank" rel="noopener noreferrer">Privacy policy</a> · <a href="tel:+15192529357">Call us instead</a>
       </div>
       <form id="mbg-chat-form">
@@ -266,12 +265,11 @@
     const sendBtn = chatWindow.querySelector("#mbg-chat-send");
     const closeBtn = chatWindow.querySelector("#mbg-chat-close");
   
-    const consentEl = chatWindow.querySelector("#mbg-chat-consent");
+    let agreedToAIChat = false;
     let sending = false;
     function updateSendButton() {
-      sendBtn.disabled = sending || !consentEl.checked;
+      sendBtn.disabled = sending;
     }
-    consentEl.addEventListener("change", updateSendButton);
     updateSendButton();
 
     let greeted = false;
@@ -328,7 +326,11 @@
     formEl.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = inputEl.value.trim();
-      if (!text || sending || !consentEl.checked) return;
+      if (!text || sending) return;
+      if (!agreedToAIChat) {
+        agreedToAIChat = window.confirm("Send your chat messages to DeepSeek to answer questions and arrange bookings? Choose Cancel to keep your message unsent.");
+        if (!agreedToAIChat) return;
+      }
   
       addMessage(text, "user");
       inputEl.value = "";
